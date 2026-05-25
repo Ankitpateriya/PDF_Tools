@@ -55,6 +55,17 @@ FLASK_SECRET_KEY="replace-me" gunicorn -w 2 -b 127.0.0.1:8000 app:app
 
 Then point your reverse proxy for `ankitji.com` to `127.0.0.1:8000`.
 
+## Render Deployment
+
+Use these settings on Render:
+
+```text
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app
+```
+
+Do not use `uvicorn` for this project. This is a Flask app, not a FastAPI/ASGI app.
+
 ## Project Structure
 
 ```text
