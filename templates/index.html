@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ankitji PDF Tools</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">ankitji.com</a>
+      <span>PDF tools</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>PDF tools for ankitji.com</h1>
+        <p>Merge, split, compress, convert, protect, rotate, watermark, and extract PDF content with Python.</p>
+      </section>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alerts">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <section class="tools" aria-label="PDF tools">
+        {% for tool in tools %}
+          <article class="tool-card">
+            <h2>{{ tool.title }}</h2>
+            <p>{{ tool.description }}</p>
+            <form action="{{ url_for('run_tool', tool_id=tool.id) }}" method="post" enctype="multipart/form-data">
+              <input type="file" name="files" accept="{{ tool.accept }}" {% if tool.multiple %}multiple{% endif %} required>
+
+              {% if tool.id == "rotate" %}
+                <label>
+                  Rotation
+                  <select name="angle">
+                    <option value="90">90 degrees</option>
+                    <option value="180">180 degrees</option>
+                    <option value="270">270 degrees</option>
+                  </select>
+                </label>
+              {% endif %}
+
+              {% if tool.id == "watermark" %}
+                <label>
+                  Watermark text
+                  <input type="text" name="watermark_text" value="ankitji.com">
+                </label>
+              {% endif %}
+
+              {% if tool.id == "protect" %}
+                <label>
+                  Password
+                  <input type="password" name="password" minlength="4" required>
+                </label>
+              {% endif %}
+
+              <button type="submit">Run tool</button>
+            </form>
+          </article>
+        {% endfor %}
+      </section>
+    </main>
+  </body>
+</html>
