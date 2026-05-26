@@ -6,7 +6,7 @@ A Python Flask starter project for PDF tools on `ankitji.com`.
 
 - Merge PDFs
 - Split a PDF into one PDF per page
-- Compress/optimize PDF
+- Compress scanned/image PDFs
 - Rotate PDF pages
 - Convert images to PDF
 - Extract PDF text

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from flask import Flask, flash, redirect, render_template, request, send_file, url_for
 from PIL import Image
+import pypdfium2 as pdfium
 from pypdf import PdfReader, PdfWriter
 from reportlab.lib.colors import Color
 from reportlab.pdfgen import canvas
@@ -65,7 +66,7 @@ def index():
         {
             "id": "compress",
             "title": "Compress PDF",
-            "description": "Compress page content streams where the PDF structure allows it.",
+            "description": "Shrink scanned/image PDFs by rebuilding pages as optimized JPEG images.",
             "accept": ".pdf",
             "multiple": False,
         },
@@ -121,7 +122,9 @@ def run_tool(tool_id: str):
         if tool_id == "split":
             return split_pdf(files[0])
         if tool_id == "compress":
-            return compress_pdf(files[0])
+            quality = int(request.form.get("quality", "55"))
+            dpi = int(request.form.get("dpi", "120"))
+            return compress_pdf(files[0], quality=quality, dpi=dpi)
         if tool_id == "rotate":
             angle = int(request.form.get("angle", "90"))
             return rotate_pdf(files[0], angle)
@@ -174,16 +177,41 @@ def split_pdf(file):
     return zip_response(output, "ankitji-split-pages.zip")
 
 
-def compress_pdf(file):
-    reader = PdfReader(file.stream)
-    writer = PdfWriter()
-    for page in reader.pages:
-        page.compress_content_streams()
-        writer.add_page(page)
+def compress_pdf(file, quality: int = 55, dpi: int = 120):
+    quality = max(20, min(quality, 95))
+    dpi = max(72, min(dpi, 200))
+    document = pdfium.PdfDocument(file.read())
+    images = []
 
-    output = io.BytesIO()
-    writer.write(output)
-    return pdf_response(output, "ankitji-compressed.pdf")
+    try:
+        scale = dpi / 72
+        for page_index in range(len(document)):
+            page = document[page_index]
+            bitmap = page.render(scale=scale)
+            image = bitmap.to_pil().convert("RGB")
+            images.append(image.copy())
+            image.close()
+            page.close()
+
+        if not images:
+            raise ValueError("No pages found in the PDF.")
+
+        output = io.BytesIO()
+        first, rest = images[0], images[1:]
+        first.save(
+            output,
+            format="PDF",
+            save_all=True,
+            append_images=rest,
+            resolution=dpi,
+            quality=quality,
+            optimize=True,
+        )
+        return pdf_response(output, "ankitji-compressed.pdf")
+    finally:
+        document.close()
+        for image in images:
+            image.close()
 
 
 def rotate_pdf(file, angle: int):
