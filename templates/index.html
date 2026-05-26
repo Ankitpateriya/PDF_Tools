@@ -47,6 +47,25 @@
                 </label>
               {% endif %}
 
+              {% if tool.id == "compress" %}
+                <label>
+                  Quality
+                  <select name="quality">
+                    <option value="45">Small file</option>
+                    <option value="55" selected>Balanced</option>
+                    <option value="70">Better quality</option>
+                  </select>
+                </label>
+                <label>
+                  Resolution
+                  <select name="dpi">
+                    <option value="96">Small file</option>
+                    <option value="120" selected>Balanced</option>
+                    <option value="150">Clearer scan</option>
+                  </select>
+                </label>
+              {% endif %}
+
               {% if tool.id == "watermark" %}
                 <label>
                   Watermark text
