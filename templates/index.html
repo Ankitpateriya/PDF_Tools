@@ -69,17 +69,17 @@
                 <label>
                   Quality
                   <select name="quality">
-                    <option value="45">Small file</option>
-                    <option value="55" selected>Balanced</option>
-                    <option value="70">Better quality</option>
+                    <option value="25">Small file</option>
+                    <option value="35" selected>Balanced</option>
+                    <option value="50">Better quality</option>
                   </select>
                 </label>
                 <label>
                   Resolution
                   <select name="dpi">
-                    <option value="96">Small file</option>
-                    <option value="120" selected>Balanced</option>
-                    <option value="150">Clearer scan</option>
+                    <option value="72">Small file</option>
+                    <option value="96" selected>Balanced</option>
+                    <option value="110">Clearer scan</option>
                   </select>
                 </label>
               {% endif %}
@@ -105,7 +105,7 @@
       </section>
     </main>
     <script>
-      const MAX_UPLOAD_MB = 15;
+      const MAX_UPLOAD_MB = 50;
       const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 
       const formatBytes = (bytes) => {
