@@ -105,6 +105,9 @@
       </section>
     </main>
     <script>
+      const MAX_UPLOAD_MB = 15;
+      const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+
       const formatBytes = (bytes) => {
         if (!bytes) return "";
         const units = ["B", "KB", "MB", "GB"];
@@ -137,6 +140,10 @@
 
           status.textContent = files.length === 1 ? files[0].name : `${files.length} files selected`;
           size.textContent = formatBytes(total);
+
+          if (total > MAX_UPLOAD_BYTES) {
+            status.textContent = `File too large. Maximum upload is ${MAX_UPLOAD_MB} MB.`;
+          }
         });
 
         form.addEventListener("submit", (event) => {
@@ -144,6 +151,14 @@
 
           if (!input.files.length) {
             status.textContent = "Choose a file first";
+            return;
+          }
+
+          const files = Array.from(input.files || []);
+          const total = files.reduce((sum, file) => sum + file.size, 0);
+          if (total > MAX_UPLOAD_BYTES) {
+            status.textContent = `File too large. Maximum upload is ${MAX_UPLOAD_MB} MB.`;
+            progress.style.width = "0%";
             return;
           }
 
