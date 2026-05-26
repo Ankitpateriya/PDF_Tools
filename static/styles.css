@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f7f5ef;
-  color: #1e2329;
+  background: #eef1f4;
+  color: #18202a;
 }
 
 * {
@@ -11,55 +11,120 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(180deg, rgba(20, 40, 62, 0.08), rgba(255, 255, 255, 0.3)),
+    #eef1f4;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, transparent 0 8%, rgba(24, 32, 42, 0.08) 8% 10%, transparent 10% 20%) 50% 0 / 280px 100%,
+    radial-gradient(circle at 80% 12%, rgba(178, 139, 62, 0.18), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(230, 235, 239, 0.64));
+  pointer-events: none;
 }
 
 .topbar {
   align-items: center;
-  background: #ffffff;
-  border-bottom: 1px solid #ded8cc;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #cfd7df;
   display: flex;
   justify-content: space-between;
-  padding: 16px clamp(18px, 4vw, 48px);
+  padding: 16px clamp(18px, 4vw, 52px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
 .brand {
-  color: #0f5c5c;
-  font-size: 1.15rem;
+  color: #12324a;
+  font-size: 1.1rem;
   font-weight: 800;
   text-decoration: none;
 }
 
+.topbar span {
+  color: #6f5a28;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
 main {
   margin: 0 auto;
-  max-width: 1180px;
-  padding: 36px clamp(18px, 4vw, 48px) 56px;
+  max-width: 1200px;
+  padding: 34px clamp(18px, 4vw, 52px) 60px;
 }
 
 .hero {
-  margin-bottom: 30px;
+  align-items: flex-end;
+  background:
+    linear-gradient(135deg, rgba(18, 50, 74, 0.94), rgba(31, 69, 91, 0.88)),
+    #12324a;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(18, 32, 42, 0.18);
+  color: #ffffff;
+  display: flex;
+  min-height: 300px;
+  overflow: hidden;
+  padding: clamp(26px, 5vw, 50px);
+  position: relative;
+}
+
+.hero::after {
+  color: rgba(255, 255, 255, 0.12);
+  content: "§";
+  font-family: Georgia, serif;
+  font-size: clamp(12rem, 28vw, 24rem);
+  line-height: 1;
+  position: absolute;
+  right: clamp(8px, 5vw, 72px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hero > div {
+  max-width: 760px;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  color: #d8b45c;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 12px;
+  text-transform: uppercase;
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-size: clamp(2.1rem, 5vw, 4.8rem);
   letter-spacing: 0;
   line-height: 1;
-  margin: 0 0 16px;
-  max-width: 860px;
+  margin: 0 0 18px;
 }
 
 .hero p {
-  color: #505860;
-  font-size: 1.12rem;
+  color: #dce6ed;
+  font-size: 1.08rem;
   line-height: 1.6;
   margin: 0;
-  max-width: 680px;
+  max-width: 650px;
 }
 
 .alerts {
-  background: #fff3d6;
-  border: 1px solid #edc56c;
+  background: #fff7df;
+  border: 1px solid #d7b65d;
   border-radius: 8px;
-  margin-bottom: 22px;
+  margin: 22px 0;
   padding: 12px 16px;
 }
 
@@ -70,28 +135,56 @@ main {
 .tools {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top: 22px;
 }
 
 .tool-card {
-  background: #ffffff;
-  border: 1px solid #ded8cc;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d7dde4;
   border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(18, 32, 42, 0.08);
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  min-height: 335px;
   padding: 18px;
 }
 
+.tool-heading {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 38px 1fr;
+}
+
+.tool-mark {
+  align-items: center;
+  background: #f6edcf;
+  border: 1px solid #d8b45c;
+  border-radius: 8px;
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.tool-mark::before {
+  color: #7a6026;
+  content: "PDF";
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
 .tool-card h2 {
-  font-size: 1.2rem;
-  margin: 0 0 8px;
+  color: #14283e;
+  font-size: 1.08rem;
+  margin: 0 0 7px;
 }
 
 .tool-card p {
-  color: #56606a;
+  color: #59636f;
+  font-size: 0.95rem;
   line-height: 1.45;
-  margin: 0 0 18px;
+  margin: 0 0 16px;
 }
 
 form {
@@ -101,10 +194,22 @@ form {
 }
 
 label {
-  color: #39414a;
+  color: #364554;
   display: grid;
   font-size: 0.9rem;
+  font-weight: 700;
   gap: 6px;
+}
+
+.file-picker {
+  background: #f8fafb;
+  border: 1px dashed #aab7c4;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.file-picker span {
+  color: #12324a;
 }
 
 input,
@@ -117,27 +222,71 @@ button {
 
 input,
 select {
-  background: #fbfaf7;
-  border: 1px solid #cfc8ba;
+  background: #ffffff;
+  border: 1px solid #c5ced8;
+  color: #18202a;
   padding: 9px 10px;
   width: 100%;
 }
 
 input[type="file"] {
-  min-height: 46px;
+  min-height: 42px;
+  padding: 8px 0 0;
+}
+
+.upload-status {
+  align-items: center;
+  color: #52606e;
+  display: flex;
+  font-size: 0.86rem;
+  gap: 10px;
+  justify-content: space-between;
+  min-height: 22px;
+}
+
+.status-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-size {
+  color: #7a6026;
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+
+.progress-track {
+  background: #dfe6ec;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #d8b45c, #12324a);
+  height: 100%;
+  transition: width 180ms ease;
+  width: 0;
 }
 
 button {
-  background: #0f5c5c;
+  background: #12324a;
   border: 0;
   color: #ffffff;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 800;
   padding: 10px 14px;
 }
 
 button:hover {
-  background: #0a4747;
+  background: #0b2538;
+}
+
+button:disabled {
+  background: #7a8793;
+  cursor: wait;
 }
 
 @media (max-width: 640px) {
@@ -145,5 +294,14 @@ button:hover {
     align-items: flex-start;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .hero {
+    min-height: 260px;
+  }
+
+  .hero::after {
+    right: -20px;
+    top: 25%;
   }
 }
