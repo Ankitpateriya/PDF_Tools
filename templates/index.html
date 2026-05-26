@@ -8,14 +8,17 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="/">ankitji.com</a>
-      <span>PDF tools</span>
+      <a class="brand" href="/">Ankitji Legal PDF Desk</a>
+      <span>Secure document tools</span>
     </header>
 
     <main>
       <section class="hero">
-        <h1>PDF tools for ankitji.com</h1>
-        <p>Merge, split, compress, convert, protect, rotate, watermark, and extract PDF content with Python.</p>
+        <div>
+          <span class="eyebrow">ankitji.com</span>
+          <h1>Legal PDF tools for everyday document work</h1>
+          <p>Merge, split, compress, convert, protect, rotate, watermark, and extract PDF content with a clean Python workflow.</p>
+        </div>
       </section>
 
       {% with messages = get_flashed_messages() %}
@@ -31,10 +34,25 @@
       <section class="tools" aria-label="PDF tools">
         {% for tool in tools %}
           <article class="tool-card">
-            <h2>{{ tool.title }}</h2>
-            <p>{{ tool.description }}</p>
-            <form action="{{ url_for('run_tool', tool_id=tool.id) }}" method="post" enctype="multipart/form-data">
-              <input type="file" name="files" accept="{{ tool.accept }}" {% if tool.multiple %}multiple{% endif %} required>
+            <div class="tool-heading">
+              <span class="tool-mark" aria-hidden="true"></span>
+              <div>
+                <h2>{{ tool.title }}</h2>
+                <p>{{ tool.description }}</p>
+              </div>
+            </div>
+            <form class="tool-form" action="{{ url_for('run_tool', tool_id=tool.id) }}" method="post" enctype="multipart/form-data">
+              <label class="file-picker">
+                <span>Select file</span>
+                <input type="file" name="files" accept="{{ tool.accept }}" {% if tool.multiple %}multiple{% endif %} required>
+              </label>
+              <div class="upload-status" aria-live="polite">
+                <span class="status-text">No file selected</span>
+                <span class="status-size"></span>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-bar"></div>
+              </div>
 
               {% if tool.id == "rotate" %}
                 <label>
@@ -86,5 +104,103 @@
         {% endfor %}
       </section>
     </main>
+    <script>
+      const formatBytes = (bytes) => {
+        if (!bytes) return "";
+        const units = ["B", "KB", "MB", "GB"];
+        const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+        return `${(bytes / 1024 ** index).toFixed(index ? 1 : 0)} ${units[index]}`;
+      };
+
+      const filenameFromHeader = (header) => {
+        const match = /filename="?([^"]+)"?/i.exec(header || "");
+        return match ? match[1] : "ankitji-download";
+      };
+
+      document.querySelectorAll(".tool-form").forEach((form) => {
+        const input = form.querySelector('input[type="file"]');
+        const status = form.querySelector(".status-text");
+        const size = form.querySelector(".status-size");
+        const progress = form.querySelector(".progress-bar");
+        const button = form.querySelector("button");
+
+        input.addEventListener("change", () => {
+          const files = Array.from(input.files || []);
+          const total = files.reduce((sum, file) => sum + file.size, 0);
+          progress.style.width = "0%";
+
+          if (!files.length) {
+            status.textContent = "No file selected";
+            size.textContent = "";
+            return;
+          }
+
+          status.textContent = files.length === 1 ? files[0].name : `${files.length} files selected`;
+          size.textContent = formatBytes(total);
+        });
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          if (!input.files.length) {
+            status.textContent = "Choose a file first";
+            return;
+          }
+
+          const originalText = button.textContent;
+          const request = new XMLHttpRequest();
+          const data = new FormData(form);
+
+          button.disabled = true;
+          button.textContent = "Uploading...";
+          status.textContent = "Uploading file";
+          progress.style.width = "8%";
+          request.responseType = "blob";
+
+          request.upload.onprogress = (event) => {
+            if (!event.lengthComputable) return;
+            const percent = Math.max(8, Math.min(92, Math.round((event.loaded / event.total) * 90)));
+            progress.style.width = `${percent}%`;
+            status.textContent = `Uploading ${percent}%`;
+          };
+
+          request.onload = () => {
+            const contentType = request.getResponseHeader("content-type") || "";
+            const disposition = request.getResponseHeader("content-disposition") || "";
+
+            if (request.status >= 200 && request.status < 300 && disposition.includes("attachment")) {
+              const url = URL.createObjectURL(request.response);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = filenameFromHeader(disposition);
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              URL.revokeObjectURL(url);
+              progress.style.width = "100%";
+              status.textContent = "Done. Download started.";
+            } else {
+              progress.style.width = "0%";
+              status.textContent = contentType.includes("html")
+                ? "Could not process this file. Try a smaller or different PDF."
+                : `Upload failed (${request.status})`;
+            }
+          };
+
+          request.onerror = () => {
+            progress.style.width = "0%";
+            status.textContent = "Network error while uploading";
+          };
+
+          request.onloadend = () => {
+            button.disabled = false;
+            button.textContent = originalText;
+          };
+
+          request.open("POST", form.action);
+          request.send(data);
+        });
+      });
+    </script>
   </body>
 </html>
